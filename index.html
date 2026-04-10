@@ -1,105 +1,117 @@
 <!DOCTYPE html>
 <html lang="sr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZARPA SHOP</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;900&display=swap" rel="stylesheet">
-<style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #000; color: #fff; font-family: 'Outfit', sans-serif; overflow-x: hidden; }
-    nav { position: fixed; top: 0; width: 100%; padding: 1.5rem; background: rgba(0,0,0,0.9); border-bottom: 1px solid #222; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-size: 1.8rem; font-weight: 900; letter-spacing: 3px; cursor: pointer; }
-    .admin-btn { display: none; background: #fff; color: #000; border: none; padding: 10px 20px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
-    .hero { padding: 120px 20px 40px; text-align: center; background: radial-gradient(circle, #111 0%, #000 100%); }
-    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-    .card { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 12px; transition: 0.3s; position: relative; text-align: center; }
-    .card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
-    .price { font-weight: 700; color: #fff; font-size: 1.5rem; margin: 10px 0; }
-    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 200; padding: 20px; }
-    .modal-content { max-width: 450px; margin: 40px auto; background: #000; padding: 30px; border: 1px solid #333; }
-    input { width: 100%; padding: 15px; margin-bottom: 12px; background: #111; border: 1px solid #222; color: #fff; outline: none; }
-    .submit-btn { width: 100%; padding: 15px; background: #fff; color: #000; border: none; font-weight: 900; cursor: pointer; width: 100%; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZARPA SHOP | Premium</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #000; color: #fff; font-family: 'Outfit', sans-serif; }
+        nav { padding: 1.5rem; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; background: #000; position: fixed; width: 100%; top: 0; z-index: 100; }
+        .logo { font-size: 1.8rem; font-weight: 900; letter-spacing: 3px; cursor: pointer; }
+        .admin-btn { display: none; background: #fff; color: #000; border: none; padding: 10px 20px; font-weight: 900; cursor: pointer; }
+        .container { max-width: 1200px; margin: 100px auto 40px; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        .card { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 15px; text-align: center; }
+        .card img { width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: 15px; border: 1px solid #222; }
+        input { width: 100%; padding: 15px; margin-bottom: 10px; background: #111; border: 1px solid #222; color: #fff; outline: none; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; padding: 20px; }
+        .modal-content { max-width: 450px; margin: 50px auto; background: #000; padding: 30px; border: 1px solid #333; }
+        .btn { width: 100%; padding: 15px; background: #fff; color: #000; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn:hover { background: #ccc; }
+    </style>
 </head>
 <body>
 
 <nav>
     <div class="logo" onclick="adminLogin()">ZARPA SHOP</div>
-    <button id="mainAddBtn" class="admin-btn" onclick="toggleModal('adminModal')">+ DODAJ ARTIKAL</button>
+    <button id="addBtn" class="admin-btn" onclick="toggleModal('adminModal')">+ DODAJ ARTIKAL</button>
 </nav>
 
-<div class="hero">
-    <h1 style="text-transform: uppercase;">Premium Wear</h1>
-    <p style="color: #555;">Sve što ubaciš se čuva automatski</p>
-</div>
-
 <div class="container">
-    <div class="grid" id="productGrid">Učitavanje...</div>
+    <div class="grid" id="shopGrid">Učitavanje proizvoda...</div>
 </div>
 
 <div id="adminModal" class="modal">
     <div class="modal-content">
-        <h2>DODAJ NOVI ARTIKAL</h2>
-        <input type="text" id="pName" placeholder="Naziv artikla">
-        <input type="text" id="pPrice" placeholder="Cena">
+        <h2 style="margin-bottom:20px; letter-spacing: 2px;">NOVI ARTIKAL</h2>
+        <input type="text" id="pName" placeholder="Naziv (npr. Nike Air)">
+        <input type="text" id="pPrice" placeholder="Cena (npr. 120€)">
         <input type="text" id="pImg" placeholder="Link slike (sa Postimg.cc)">
-        <button class="submit-btn" onclick="saveToCloud()">SAČUVAJ DA SVI VIDE</button>
-        <button onclick="toggleModal('adminModal')" style="background:none; color:#555; border:none; margin-top:15px; cursor:pointer; width:100%;">Zatvori</button>
+        <button class="btn" onclick="saveToCloud()">SAČUVAJ DA SVI VIDE</button>
+        <button onclick="toggleModal('adminModal')" style="background:none; color:#555; border:none; margin-top:15px; cursor:pointer; width:100%">Zatvori</button>
     </div>
 </div>
 
 <script>
-    // --- TVOJI PODACI ---
-    const SUPABASE_URL = 'https://qwzzjiuogqpqfumgaxsl.supabase.co'; 
-    const SUPABASE_KEY = 'OVDE_ZALEPI_SVOJ_ANON_KEY'; // <--- OVDE STAVI ONAJ DUGI KLJUČ!
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // TVOJI PODACI SA SNIMKA
+    const S_URL = 'https://qwzzjiuogqpqfumgaxsl.supabase.co';
+    const S_KEY = 'sb_publishable_10N7PU1uiJu20FozwK9roQ_0JqHg_REDACTED'; // Ovde ide tvoj ceo ključ sa snimka
+    const _supabase = supabase.createClient(S_URL, S_KEY);
 
     let isAdmin = false;
 
+    // Funkcija za admina
     function adminLogin() {
-        if(prompt("Lozinka:") === "zarpa123") {
+        if(prompt("Unesi lozinku:") === "zarpa123") {
             isAdmin = true;
-            document.getElementById('mainAddBtn').style.display = 'block';
+            document.getElementById('addBtn').style.display = 'block';
             render();
-            alert("Admin mod uključen!");
+            alert("Admin mod aktiviran!");
         }
     }
 
+    // Funkcija koja AUTOMATSKI čuva svima
     async function saveToCloud() {
         const name = document.getElementById('pName').value;
         const price = document.getElementById('pPrice').value;
         const img = document.getElementById('pImg').value;
-        if(!name || !price || !img) return alert("Popuni sve!");
 
-        const { error } = await _supabase
-            .from('proizvodi')
-            .insert([{ ime: name, cena: price, slika: img }]);
+        if(!name || !price || !img) return alert("Popuni sva polja!");
 
-        if (error) alert("Greška: Proveri da li si napravio tabelu!");
-        else location.reload();
+        // Prvo uzmemo trenutne artikle
+        let { data: currentData } = await _supabase.from('shop').select('data').eq('id', 1).single();
+        let items = currentData ? currentData.data : [];
+        
+        // Dodamo novi artikal
+        items.push({ name, price, img });
+
+        // Sačuvamo nazad u bazu
+        const { error } = await _supabase.from('shop').update({ data: items }).eq('id', 1);
+
+        if(error) {
+            alert("Greška! Proveri da li si kliknuo RUN u SQL Editoru.");
+        } else {
+            alert("USPEŠNO SAČUVANO!");
+            location.reload();
+        }
     }
 
+    // Funkcija koja prikazuje artikle svima
     async function render() {
-        const { data, error } = await _supabase.from('proizvodi').select('*');
-        const grid = document.getElementById('productGrid');
-        if (data) {
-            grid.innerHTML = data.map(p => `
-                <div class="card">
-                    <img src="${p.slika}">
-                    <h3>${p.ime}</h3>
-                    <div class="price">${p.cena}</div>
-                    <button class="submit-btn" style="padding:10px;">NARUČI</button>
-                </div>
-            `).join('');
+        const grid = document.getElementById('shopGrid');
+        let { data, error } = await _supabase.from('shop').select('data').eq('id', 1).single();
+        
+        if(error || !data) {
+            grid.innerHTML = "Sajt je trenutno prazan.";
+            return;
         }
+
+        grid.innerHTML = data.data.map((item, i) => `
+            <div class="card">
+                <img src="${item.img}" onerror="this.src='https://via.placeholder.com/300?text=Greška+Slike'">
+                <h3 style="text-transform: uppercase;">${item.name}</h3>
+                <div style="font-size:1.5rem; font-weight:900; margin:10px 0">${item.price}</div>
+                <button class="btn" style="padding:10px; font-size: 0.8rem;">NARUČI</button>
+            </div>
+        `).join('');
     }
 
     function toggleModal(id) {
         const m = document.getElementById(id);
-        m.style.display = (m.style.display === 'block') ? 'none' : 'block';
+        m.style.display = m.style.display === 'block' ? 'none' : 'block';
     }
 
     render();
