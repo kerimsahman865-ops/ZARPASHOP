@@ -60,7 +60,7 @@
     <div class="grid" id="productGrid"></div>
     
     <div id="githubPanel">
-        <p style="margin-bottom: 10px; color: #aaa;">Da bi tvoji artikli bili vidljivi SVIMA, klikni dugme ispod:</p>
+        <p style="margin-bottom: 10px; color: #aaa;">Klikni dugme ispod da sačuvaš promene za sve kupce:</p>
         <button class="submit-btn" onclick="copyFullCode()" style="background: #00ff00;">KOPIRAJ KOD ZA GITHUB</button>
     </div>
 </div>
@@ -105,10 +105,10 @@
     </div>
 </div>
 
-<script id="dataSection">
-    // --- OVDE SE PAMTE ARTIKLI ---
+<script id="dataScript">
+    // --- BAZA PODATAKA (NE DIRAJ RUČNO) ---
     let db = [];
-    // ----------------------------
+    // -------------------------------------
 
     let isAdmin = false;
 
@@ -194,12 +194,12 @@
     }
 
     function copyFullCode() {
-        let currentHTML = document.documentElement.outerHTML;
-        let dataStr = JSON.stringify(db);
-        let finalHTML = currentHTML.replace(/let db = \[.*?\];/, `let db = ${dataStr};`);
+        const currentHTML = document.documentElement.outerHTML;
+        const dataStr = JSON.stringify(db);
+        const finalHTML = currentHTML.replace(/let db = \[.*?\];/, `let db = ${dataStr};`);
         
         navigator.clipboard.writeText(finalHTML).then(() => {
-            alert("KOD JE KOPIRAN! Sada ga nalepi na GitHub u index.html i klikni Commit.");
+            alert("KOD KOPIRAN! Idi na GitHub, obriši sve u index.html i nalepi ovo.");
         });
     }
 
