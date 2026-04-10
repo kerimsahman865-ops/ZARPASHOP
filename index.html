@@ -1,185 +1,118 @@
 <!DOCTYPE html>
 <html lang="sr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZARPA SHOP</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;900&display=swap" rel="stylesheet">
-<style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #000; color: #fff; font-family: 'Outfit', sans-serif; overflow-x: hidden; }
-    
-    /* NAV */
-    nav { position: fixed; top: 0; width: 100%; padding: 1.5rem; background: rgba(0,0,0,0.9); border-bottom: 1px solid #222; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-size: 1.8rem; font-weight: 900; letter-spacing: 3px; cursor: pointer; }
-    .admin-btn { display: none; background: transparent; color: #fff; border: 1px solid #fff; padding: 8px 15px; cursor: pointer; font-size: 0.7rem; text-transform: uppercase; }
-
-    /* HERO */
-    .hero { padding: 120px 20px 40px; text-align: center; background: radial-gradient(circle, #111 0%, #000 100%); }
-    .badge { display: inline-block; border: 1px solid #444; padding: 5px 15px; font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 15px; color: #888; }
-
-    /* GRID */
-    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-    .card { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 12px; cursor: pointer; transition: 0.3s; position: relative; }
-    .card:hover { border-color: #fff; }
-    .card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
-    .card h3 { font-size: 1.1rem; margin: 10px 0 5px; text-transform: uppercase; }
-    .card .price { font-weight: 700; color: #fff; font-size: 1.2rem; }
-    .card .del-btn { display: none; position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; padding: 5px; font-size: 10px; cursor: pointer; z-index: 5; }
-
-    /* MODAL */
-    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 200; padding: 20px; overflow-y: auto; }
-    .modal-content { max-width: 450px; margin: 40px auto; background: #000; padding: 30px; border: 1px solid #333; position: relative; }
-    .close { position: absolute; top: 10px; right: 15px; font-size: 30px; cursor: pointer; }
-
-    input, select { width: 100%; padding: 15px; margin-bottom: 12px; background: #111; border: 1px solid #222; color: #fff; font-family: inherit; outline: none; }
-    .submit-btn { width: 100%; padding: 15px; background: #fff; color: #000; border: none; font-weight: 900; text-transform: uppercase; cursor: pointer; font-size: 1rem; }
-
-    .size-selection { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-    .size-box { font-size: 0.8rem; color: #888; display: flex; align-items: center; gap: 5px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZARPA SHOP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #000; color: #fff; font-family: 'Outfit', sans-serif; }
+        nav { padding: 1.5rem; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; background: #000; position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 1.8rem; font-weight: 900; letter-spacing: 3px; cursor: pointer; }
+        .admin-btn { display: none; background: #fff; color: #000; border: none; padding: 10px 20px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        .card { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 15px; text-align: center; position: relative; }
+        .card img { width: 100%; aspect-ratio: 1; object-fit: contain; background: #fff; margin-bottom: 15px; }
+        .price { font-size: 1.5rem; font-weight: 900; margin-bottom: 15px; }
+        .btn-order { width: 100%; padding: 12px; background: #fff; color: #000; border: none; font-weight: 900; cursor: pointer; }
+        .del-btn { position: absolute; top: 10px; right: 10px; background: red; color: #fff; border: none; padding: 5px 10px; cursor: pointer; display: none; }
+        
+        #copyPanel { display: none; background: #111; padding: 20px; border: 2px dashed #fff; margin-top: 40px; text-align: center; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 200; padding: 20px; }
+        .modal-content { max-width: 400px; margin: 50px auto; background: #000; padding: 30px; border: 1px solid #333; }
+        input { width: 100%; padding: 15px; margin-bottom: 10px; background: #111; border: 1px solid #222; color: #fff; }
+    </style>
 </head>
 <body>
 
 <nav>
     <div class="logo" onclick="adminLogin()">ZARPA SHOP</div>
-    <button id="mainAddBtn" class="admin-btn" onclick="toggleModal('adminModal')">+ DODAJ ARTIKAL</button>
+    <button id="addBtn" class="admin-btn" onclick="toggleModal('adminModal')">+ DODAJ ARTIKAL</button>
 </nav>
 
-<div class="hero">
-    <div class="badge">SRBIJA 🇷🇸 & CRNA GORA 🇲🇪</div>
-    <h1 style="text-transform: uppercase;">Nike • Polo • Lacoste</h1>
-    <p style="color: #555; font-size: 0.9rem; margin-top: 10px;">Premium Wear for Adults Only</p>
-</div>
-
 <div class="container">
-    <div class="grid" id="productGrid"></div>
-</div>
+    <div class="grid" id="mainShop">
+        </div>
 
-<div id="orderModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="toggleModal('orderModal')">&times;</span>
-        <div id="modalInfo" style="margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 15px;"></div>
-        <form action="https://formspree.io/f/xgopjbqk" method="POST">
-            <input type="hidden" name="Artikal" id="formArtikal">
-            <input type="text" name="Ime_i_Prezime" placeholder="Ime i Prezime" required>
-            <input type="tel" name="Telefon" placeholder="Broj telefona" required>
-            <input type="text" name="Adresa" placeholder="Grad i Adresa" required>
-            <select name="Drzava">
-                <option value="Srbija">Srbija 🇷🇸</option>
-                <option value="Crna Gora">Crna Gora 🇲🇪</option>
-            </select>
-            <select name="Velicina" id="formSizes"></select>
-            <button type="submit" class="submit-btn">Potvrdi narudžbu</button>
-        </form>
+    <div id="copyPanel">
+        <p style="margin-bottom: 15px; color: #888;">Nakon što dodaš ili obrišeš artikle, klikni dugme ispod:</p>
+        <button class="btn-order" onclick="copyFullCode()" style="background: lime;">KOPIRAJ CEO KOD ZA GITHUB</button>
     </div>
 </div>
 
 <div id="adminModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="toggleModal('adminModal')">&times;</span>
         <h2>NOVI ARTIKAL</h2>
-        <div style="margin: 20px 0;">
-            <input type="file" id="inpFile" accept="image/*">
-            <input type="text" id="inpName" placeholder="Naziv">
-            <input type="text" id="inpPrice" placeholder="Cena">
-            <div class="size-selection" id="inpSizes">
-                <label class="size-box"><input type="checkbox" value="S"> S</label>
-                <label class="size-box"><input type="checkbox" value="M"> M</label>
-                <label class="size-box"><input type="checkbox" value="L"> L</label>
-                <label class="size-box"><input type="checkbox" value="XL"> XL</label>
-                <label class="size-box"><input type="checkbox" value="XXL"> XXL</label>
-                <label class="size-box"><input type="checkbox" value="40-45"> 40-45</label>
-            </div>
-            <button class="submit-btn" onclick="saveProduct()">Sačuvaj Artikal</button>
-        </div>
+        <input type="text" id="pName" placeholder="Naziv">
+        <input type="text" id="pPrice" placeholder="Cena">
+        <input type="text" id="pImg" placeholder="Link slike">
+        <button class="btn-order" onclick="addNewItem()">Dodaj na listu</button>
+        <button class="btn-order" onclick="toggleModal('adminModal')" style="margin-top:10px; background: #333; color: #fff;">Zatvori</button>
     </div>
 </div>
 
-<script>
-    let db = JSON.parse(localStorage.getItem('zarpa_v3') || '[]');
+<script id="dataScript">
+    // --- OVDE SE ČUVAJU TVOJI ARTIKLI ---
+    const savedItems = []; 
+    // -----------------------------------
+
     let isAdmin = false;
 
     function adminLogin() {
-        let pass = prompt("Lozinka za Admina:");
-        if(pass === "zarpa123") {
+        if(prompt("Lozinka:") === "zarpa123") {
             isAdmin = true;
-            document.getElementById('mainAddBtn').style.display = 'block';
+            document.getElementById('addBtn').style.display = 'block';
+            document.getElementById('copyPanel').style.display = 'block';
             render();
-            alert("Admin mod aktiviran!");
         }
     }
 
-    function toggleModal(id) {
-        const m = document.getElementById(id);
-        m.style.display = (m.style.display === 'block') ? 'none' : 'block';
+    function addNewItem() {
+        const name = document.getElementById('pName').value;
+        const price = document.getElementById('pPrice').value;
+        const img = document.getElementById('pImg').value;
+        if(!name || !price || !img) return alert("Popuni sve!");
+        
+        savedItems.push({ name, price, img });
+        toggleModal('adminModal');
+        render();
     }
 
-    function saveProduct() {
-        const file = document.getElementById('inpFile').files[0];
-        const name = document.getElementById('inpName').value;
-        const price = document.getElementById('inpPrice').value;
-        const checks = Array.from(document.querySelectorAll('#inpSizes input:checked')).map(c => c.value);
-
-        if(!file || !name || !price) return alert("Popuni sve!");
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (e) => {
-            const img = new Image();
-            img.src = e.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const scale = 500 / img.width;
-                canvas.width = 500;
-                canvas.height = img.height * scale;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                const finalImg = canvas.toDataURL('image/jpeg', 0.6);
-
-                db.push({ img: finalImg, name, price, sizes: checks });
-                localStorage.setItem('zarpa_v3', JSON.stringify(db));
-                location.reload();
-            };
-        };
+    function deleteItem(index) {
+        if(confirm("Obriši?")) {
+            savedItems.splice(index, 1);
+            render();
+        }
     }
 
     function render() {
-        const grid = document.getElementById('productGrid');
-        grid.innerHTML = db.map((item, i) => `
-            <div class="card" onclick="openOrder(${i})">
-                ${isAdmin ? `<button class="del-btn" style="display:block" onclick="event.stopPropagation(); deleteItem(${i})">OBRIŠI</button>` : ''}
+        const shop = document.getElementById('mainShop');
+        shop.innerHTML = savedItems.map((item, i) => `
+            <div class="card">
+                <button class="del-btn" style="display: ${isAdmin ? 'block' : 'none'}" onclick="deleteItem(${i})">X</button>
                 <img src="${item.img}">
                 <h3>${item.name}</h3>
                 <div class="price">${item.price}</div>
-                <div style="font-size:0.6rem; color:#444; margin-top:5px;">VELIČINE: ${item.sizes.join(', ')}</div>
+                <button class="btn-order">NARUČI</button>
             </div>
         `).join('');
     }
 
-    function openOrder(i) {
-        const item = db[i];
-        document.getElementById('formArtikal').value = item.name;
-        document.getElementById('modalInfo').innerHTML = `
-            <div style="display:flex; gap:15px; align-items:center;">
-                <img src="${item.img}" style="width:60px; height:60px; object-fit:cover; border:1px solid #333;">
-                <div>
-                    <h4 style="text-transform:uppercase;">${item.name}</h4>
-                    <p style="color:#888;">${item.price}</p>
-                </div>
-            </div>
-        `;
-        document.getElementById('formSizes').innerHTML = item.sizes.map(s => `<option value="${s}">${s}</option>`).join('');
-        toggleModal('orderModal');
+    function toggleModal(id) {
+        const m = document.getElementById(id);
+        m.style.display = m.style.display === 'block' ? 'none' : 'block';
     }
 
-    function deleteItem(i) {
-        if(confirm("Obrisati?")) {
-            db.splice(i, 1);
-            localStorage.setItem('zarpa_v3', JSON.stringify(db));
-            render();
-        }
+    function copyFullCode() {
+        let currentContent = document.documentElement.outerHTML;
+        let dataString = JSON.stringify(savedItems);
+        let finalCode = currentContent.replace(/const savedItems = \[.*?\];/, `const savedItems = ${dataString};`);
+        
+        navigator.clipboard.writeText(finalCode).then(() => {
+            alert("KOD KOPIRAN! Sada idi na GitHub, uđi u index.html, obriši sve i nalepi ovo.");
+        });
     }
 
     render();
