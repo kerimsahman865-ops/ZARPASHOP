@@ -4,43 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ZARPA SHOP</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;900&display=swap" rel="stylesheet">
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #000; color: #fff; font-family: 'Outfit', sans-serif; overflow-x: hidden; }
-    
-    /* NAV */
     nav { position: fixed; top: 0; width: 100%; padding: 1.5rem; background: rgba(0,0,0,0.9); border-bottom: 1px solid #222; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
     .logo { font-size: 1.8rem; font-weight: 900; letter-spacing: 3px; cursor: pointer; }
-    .admin-btn { display: none; background: transparent; color: #fff; border: 1px solid #fff; padding: 8px 15px; cursor: pointer; font-size: 0.7rem; text-transform: uppercase; }
-
-    /* HERO */
+    .admin-btn { display: none; background: #fff; color: #000; border: none; padding: 10px 20px; font-weight: 900; cursor: pointer; text-transform: uppercase; }
     .hero { padding: 120px 20px 40px; text-align: center; background: radial-gradient(circle, #111 0%, #000 100%); }
-    .badge { display: inline-block; border: 1px solid #444; padding: 5px 15px; font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 15px; color: #888; }
-
-    /* GRID */
     .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-    .card { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 12px; cursor: pointer; transition: 0.3s; position: relative; }
-    .card:hover { border-color: #fff; }
+    .card { background: #0a0a0a; border: 1px solid #1a1a1a; padding: 12px; transition: 0.3s; position: relative; text-align: center; }
     .card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
-    .card h3 { font-size: 1.1rem; margin: 10px 0 5px; text-transform: uppercase; }
-    .card .price { font-weight: 700; color: #fff; font-size: 1.2rem; }
-    .card .del-btn { display: none; position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; padding: 5px; font-size: 10px; cursor: pointer; z-index: 5; }
-
-    /* GITHUB PANEL */
-    #githubPanel { display: none; background: #111; padding: 20px; border: 2px dashed #fff; margin-top: 20px; text-align: center; }
-
-    /* MODAL */
-    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 200; padding: 20px; overflow-y: auto; }
-    .modal-content { max-width: 450px; margin: 40px auto; background: #000; padding: 30px; border: 1px solid #333; position: relative; }
-    .close { position: absolute; top: 10px; right: 15px; font-size: 30px; cursor: pointer; }
-
-    input, select { width: 100%; padding: 15px; margin-bottom: 12px; background: #111; border: 1px solid #222; color: #fff; font-family: inherit; outline: none; }
-    .submit-btn { width: 100%; padding: 15px; background: #fff; color: #000; border: none; font-weight: 900; text-transform: uppercase; cursor: pointer; font-size: 1rem; }
-
-    .size-selection { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-    .size-box { font-size: 0.8rem; color: #888; display: flex; align-items: center; gap: 5px; }
+    .price { font-weight: 700; color: #fff; font-size: 1.5rem; margin: 10px 0; }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 200; padding: 20px; }
+    .modal-content { max-width: 450px; margin: 40px auto; background: #000; padding: 30px; border: 1px solid #333; }
+    input { width: 100%; padding: 15px; margin-bottom: 12px; background: #111; border: 1px solid #222; color: #fff; outline: none; }
+    .submit-btn { width: 100%; padding: 15px; background: #fff; color: #000; border: none; font-weight: 900; cursor: pointer; width: 100%; }
 </style>
 </head>
 <body>
@@ -51,75 +32,68 @@
 </nav>
 
 <div class="hero">
-    <div class="badge">SRBIJA 🇷🇸 & CRNA GORA 🇲🇪</div>
-    <h1 style="text-transform: uppercase;">Nike • Polo • Lacoste</h1>
-    <p style="color: #555; font-size: 0.9rem; margin-top: 10px;">Premium Wear for Adults Only</p>
+    <h1 style="text-transform: uppercase;">Premium Wear</h1>
+    <p style="color: #555;">Sve što ubaciš se čuva automatski</p>
 </div>
 
 <div class="container">
-    <div class="grid" id="productGrid"></div>
-    
-    <div id="githubPanel">
-        <p style="margin-bottom: 10px; color: #aaa;">Klikni dugme ispod da sačuvaš promene za sve kupce:</p>
-        <button class="submit-btn" onclick="copyFullCode()" style="background: #00ff00;">KOPIRAJ KOD ZA GITHUB</button>
-    </div>
-</div>
-
-<div id="orderModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="toggleModal('orderModal')">&times;</span>
-        <div id="modalInfo" style="margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 15px;"></div>
-        <form action="https://formspree.io/f/xgopjbqk" method="POST">
-            <input type="hidden" name="Artikal" id="formArtikal">
-            <input type="text" name="Ime_i_Prezime" placeholder="Ime i Prezime" required>
-            <input type="tel" name="Telefon" placeholder="Broj telefona" required>
-            <input type="text" name="Adresa" placeholder="Grad i Adresa" required>
-            <select name="Drzava">
-                <option value="Srbija">Srbija 🇷🇸</option>
-                <option value="Crna Gora">Crna Gora 🇲🇪</option>
-            </select>
-            <select name="Velicina" id="formSizes"></select>
-            <button type="submit" class="submit-btn">Potvrdi narudžbu</button>
-        </form>
-    </div>
+    <div class="grid" id="productGrid">Učitavanje...</div>
 </div>
 
 <div id="adminModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="toggleModal('adminModal')">&times;</span>
-        <h2>NOVI ARTIKAL</h2>
-        <div style="margin: 20px 0;">
-            <input type="file" id="inpFile" accept="image/*">
-            <input type="text" id="inpName" placeholder="Naziv">
-            <input type="text" id="inpPrice" placeholder="Cena">
-            <div class="size-selection" id="inpSizes">
-                <label class="size-box"><input type="checkbox" value="S"> S</label>
-                <label class="size-box"><input type="checkbox" value="M"> M</label>
-                <label class="size-box"><input type="checkbox" value="L"> L</label>
-                <label class="size-box"><input type="checkbox" value="XL"> XL</label>
-                <label class="size-box"><input type="checkbox" value="XXL"> XXL</label>
-                <label class="size-box"><input type="checkbox" value="40-45"> 40-45</label>
-            </div>
-            <button class="submit-btn" onclick="saveProduct()">Sačuvaj Artikal</button>
-        </div>
+        <h2>DODAJ NOVI ARTIKAL</h2>
+        <input type="text" id="pName" placeholder="Naziv artikla">
+        <input type="text" id="pPrice" placeholder="Cena">
+        <input type="text" id="pImg" placeholder="Link slike (sa Postimg.cc)">
+        <button class="submit-btn" onclick="saveToCloud()">SAČUVAJ DA SVI VIDE</button>
+        <button onclick="toggleModal('adminModal')" style="background:none; color:#555; border:none; margin-top:15px; cursor:pointer; width:100%;">Zatvori</button>
     </div>
 </div>
 
-<script id="dataScript">
-    // --- BAZA PODATAKA (NE DIRAJ RUČNO) ---
-    let db = [];
-    // -------------------------------------
+<script>
+    // --- TVOJI PODACI ---
+    const SUPABASE_URL = 'https://qwzzjiuogqpqfumgaxsl.supabase.co'; 
+    const SUPABASE_KEY = 'OVDE_ZALEPI_SVOJ_ANON_KEY'; // <--- OVDE STAVI ONAJ DUGI KLJUČ!
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let isAdmin = false;
 
     function adminLogin() {
-        let pass = prompt("Lozinka za Admina:");
-        if(pass === "zarpa123") {
+        if(prompt("Lozinka:") === "zarpa123") {
             isAdmin = true;
             document.getElementById('mainAddBtn').style.display = 'block';
-            document.getElementById('githubPanel').style.display = 'block';
             render();
-            alert("Admin mod aktiviran!");
+            alert("Admin mod uključen!");
+        }
+    }
+
+    async function saveToCloud() {
+        const name = document.getElementById('pName').value;
+        const price = document.getElementById('pPrice').value;
+        const img = document.getElementById('pImg').value;
+        if(!name || !price || !img) return alert("Popuni sve!");
+
+        const { error } = await _supabase
+            .from('proizvodi')
+            .insert([{ ime: name, cena: price, slika: img }]);
+
+        if (error) alert("Greška: Proveri da li si napravio tabelu!");
+        else location.reload();
+    }
+
+    async function render() {
+        const { data, error } = await _supabase.from('proizvodi').select('*');
+        const grid = document.getElementById('productGrid');
+        if (data) {
+            grid.innerHTML = data.map(p => `
+                <div class="card">
+                    <img src="${p.slika}">
+                    <h3>${p.ime}</h3>
+                    <div class="price">${p.cena}</div>
+                    <button class="submit-btn" style="padding:10px;">NARUČI</button>
+                </div>
+            `).join('');
         }
     }
 
@@ -128,83 +102,7 @@
         m.style.display = (m.style.display === 'block') ? 'none' : 'block';
     }
 
-    function saveProduct() {
-        const file = document.getElementById('inpFile').files[0];
-        const name = document.getElementById('inpName').value;
-        const price = document.getElementById('inpPrice').value;
-        const checks = Array.from(document.querySelectorAll('#inpSizes input:checked')).map(c => c.value);
-
-        if(!file || !name || !price) return alert("Popuni sve!");
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (e) => {
-            const img = new Image();
-            img.src = e.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const scale = 500 / img.width;
-                canvas.width = 500;
-                canvas.height = img.height * scale;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                const finalImg = canvas.toDataURL('image/jpeg', 0.6);
-
-                db.push({ img: finalImg, name, price, sizes: checks });
-                render();
-                toggleModal('adminModal');
-            };
-        };
-    }
-
-    function render() {
-        const grid = document.getElementById('productGrid');
-        grid.innerHTML = db.map((item, i) => `
-            <div class="card" onclick="openOrder(${i})">
-                ${isAdmin ? `<button class="del-btn" style="display:block" onclick="event.stopPropagation(); deleteItem(${i})">OBRIŠI</button>` : ''}
-                <img src="${item.img}">
-                <h3>${item.name}</h3>
-                <div class="price">${item.price}</div>
-                <div style="font-size:0.6rem; color:#444; margin-top:5px;">VELIČINE: ${item.sizes.join(', ')}</div>
-            </div>
-        `).join('');
-    }
-
-    function openOrder(i) {
-        const item = db[i];
-        document.getElementById('formArtikal').value = item.name;
-        document.getElementById('modalInfo').innerHTML = `
-            <div style="display:flex; gap:15px; align-items:center;">
-                <img src="${item.img}" style="width:60px; height:60px; object-fit:cover; border:1px solid #333;">
-                <div>
-                    <h4 style="text-transform:uppercase;">${item.name}</h4>
-                    <p style="color:#888;">${item.price}</p>
-                </div>
-            </div>
-        `;
-        document.getElementById('formSizes').innerHTML = item.sizes.map(s => `<option value="${s}">${s}</option>`).join('');
-        toggleModal('orderModal');
-    }
-
-    function deleteItem(i) {
-        if(confirm("Obrisati?")) {
-            db.splice(i, 1);
-            render();
-        }
-    }
-
-    function copyFullCode() {
-        const currentHTML = document.documentElement.outerHTML;
-        const dataStr = JSON.stringify(db);
-        const finalHTML = currentHTML.replace(/let db = \[.*?\];/, `let db = ${dataStr};`);
-        
-        navigator.clipboard.writeText(finalHTML).then(() => {
-            alert("KOD KOPIRAN! Idi na GitHub, obriši sve u index.html i nalepi ovo.");
-        });
-    }
-
     render();
 </script>
-
 </body>
 </html>
