@@ -11,8 +11,8 @@
     
     /* NAV */
     nav { position: fixed; top: 0; width: 100%; padding: 1.5rem; background: rgba(0,0,0,0.9); border-bottom: 1px solid #222; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-size: 1.8rem; font-weight: 900; letter-spacing: 3px; }
-    .admin-btn { background: transparent; color: #fff; border: 1px solid #fff; padding: 8px 15px; cursor: pointer; font-size: 0.7rem; text-transform: uppercase; }
+    .logo { font-size: 1.8rem; font-weight: 900; letter-spacing: 3px; cursor: pointer; }
+    .admin-btn { display: none; background: transparent; color: #fff; border: 1px solid #fff; padding: 8px 15px; cursor: pointer; font-size: 0.7rem; text-transform: uppercase; }
 
     /* HERO */
     .hero { padding: 120px 20px 40px; text-align: center; background: radial-gradient(circle, #111 0%, #000 100%); }
@@ -26,7 +26,7 @@
     .card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
     .card h3 { font-size: 1.1rem; margin: 10px 0 5px; text-transform: uppercase; }
     .card .price { font-weight: 700; color: #fff; font-size: 1.2rem; }
-    .card .del-btn { position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; padding: 5px; font-size: 10px; cursor: pointer; z-index: 5; }
+    .card .del-btn { display: none; position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; padding: 5px; font-size: 10px; cursor: pointer; z-index: 5; }
 
     /* MODAL */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 200; padding: 20px; overflow-y: auto; }
@@ -34,7 +34,6 @@
     .close { position: absolute; top: 10px; right: 15px; font-size: 30px; cursor: pointer; }
 
     input, select { width: 100%; padding: 15px; margin-bottom: 12px; background: #111; border: 1px solid #222; color: #fff; font-family: inherit; outline: none; }
-    input:focus { border-color: #fff; }
     .submit-btn { width: 100%; padding: 15px; background: #fff; color: #000; border: none; font-weight: 900; text-transform: uppercase; cursor: pointer; font-size: 1rem; }
 
     .size-selection { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
@@ -44,8 +43,8 @@
 <body>
 
 <nav>
-    <div class="logo">ZARPA SHOP</div>
-    <button class="admin-btn" onclick="toggleModal('adminModal')">+ DODAJ ARTIKAL</button>
+    <div class="logo" onclick="adminLogin()">ZARPA SHOP</div>
+    <button id="mainAddBtn" class="admin-btn" onclick="toggleModal('adminModal')">+ DODAJ ARTIKAL</button>
 </nav>
 
 <div class="hero">
@@ -83,10 +82,8 @@
         <h2>NOVI ARTIKAL</h2>
         <div style="margin: 20px 0;">
             <input type="file" id="inpFile" accept="image/*">
-            <input type="text" id="inpName" placeholder="Naziv (Nike TN, Polo majica...)">
-            <input type="text" id="inpPrice" placeholder="Cena (npr. 120€)">
-            
-            <p style="font-size: 0.7rem; color: #555; margin: 10px 0;">IZABERI VELIČINE:</p>
+            <input type="text" id="inpName" placeholder="Naziv">
+            <input type="text" id="inpPrice" placeholder="Cena">
             <div class="size-selection" id="inpSizes">
                 <label class="size-box"><input type="checkbox" value="S"> S</label>
                 <label class="size-box"><input type="checkbox" value="M"> M</label>
@@ -102,6 +99,17 @@
 
 <script>
     let db = JSON.parse(localStorage.getItem('zarpa_v3') || '[]');
+    let isAdmin = false;
+
+    function adminLogin() {
+        let pass = prompt("Lozinka za Admina:");
+        if(pass === "zarpa123") {
+            isAdmin = true;
+            document.getElementById('mainAddBtn').style.display = 'block';
+            render();
+            alert("Admin mod aktiviran!");
+        }
+    }
 
     function toggleModal(id) {
         const m = document.getElementById(id);
@@ -122,15 +130,13 @@
             const img = new Image();
             img.src = e.target.result;
             img.onload = () => {
-                // KOMPRESIJA NA 500px - Ovo čuva memoriju!
                 const canvas = document.createElement('canvas');
                 const scale = 500 / img.width;
                 canvas.width = 500;
                 canvas.height = img.height * scale;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                
-                const finalImg = canvas.toDataURL('image/jpeg', 0.6); // 60% kvalitet za max uštedu
+                const finalImg = canvas.toDataURL('image/jpeg', 0.6);
 
                 db.push({ img: finalImg, name, price, sizes: checks });
                 localStorage.setItem('zarpa_v3', JSON.stringify(db));
@@ -143,7 +149,7 @@
         const grid = document.getElementById('productGrid');
         grid.innerHTML = db.map((item, i) => `
             <div class="card" onclick="openOrder(${i})">
-                <button class="del-btn" onclick="event.stopPropagation(); deleteItem(${i})">OBRIŠI</button>
+                ${isAdmin ? `<button class="del-btn" style="display:block" onclick="event.stopPropagation(); deleteItem(${i})">OBRIŠI</button>` : ''}
                 <img src="${item.img}">
                 <h3>${item.name}</h3>
                 <div class="price">${item.price}</div>
@@ -178,6 +184,5 @@
 
     render();
 </script>
-
 </body>
 </html>
